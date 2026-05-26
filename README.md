@@ -38,16 +38,6 @@ spectralbridge/
 
 See `docs/setup.md` for detailed installation instructions.
 
-## Timeline
-
-- **Week 1**: Data download & feature extraction
-- **Week 2**: SpectralBridge training & retrieval evaluation
-- **Week 3**: Image generation (IP-Adapter integration)
-- **Week 4**: Documentation & demo
-
-## Citation
-
-Project developed as part of Master's application portfolio for Koç University.
 
 ## License
 

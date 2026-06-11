@@ -6,11 +6,11 @@ The proposed architecture — *SpectralBridge*, a Fourier-feature + SIREN bridge
 
 ## Key findings
 
-1. **A full-rank linear map is the strongest audio→visual bridge.** A single trained 768×768 linear layer between Audio-MAE and DINOv2 spaces reaches **43.7% R@5** on a held-out set where chance is 2.0%. The two encoders — trained independently, on different modalities, with no shared supervision — produce representation spaces that align to a large degree under a simple affine transform.
+1. **A full-rank linear map is the strongest audio→visual bridge.** A single trained 768×768 linear layer between Audio-MAE and DINOv2 spaces reaches **45.7% R@5** on a held-out set where chance is 2.0%. The two encoders — trained independently, on different modalities, with no shared supervision — produce representation spaces that align to a large degree under a simple affine transform.
 
-2. **The proposed Fourier+SIREN bridge fails to generalize, and the failure is isolated to that block.** A ReLU MLP with the same depth, width, dropout, data, and training budget generalizes well (32.3% R@5); SpectralBridge, differing only in the frozen random Fourier projection and sine activations, scores below chance (0.8% R@5). This is a clean ablation result: the periodic-architecture hypothesis was tested and rejected on this task.
+2. **The proposed Fourier+SIREN bridge fails to generalize, and the failure is isolated to that block.** A ReLU MLP with the same depth, width, dropout, data, and training budget generalizes well (34.3% R@5); SpectralBridge, differing only in the frozen random Fourier projection and sine activations, performs at chance level (2.8% R@5). This is a clean ablation result: the periodic-architecture hypothesis was tested and rejected on this task.
 
-3. **Text-aligned encoders transfer poorly zero-shot but adapt cheaply.** Zero-shot CLAP→CLIP retrieval is at chance level (2.4% R@5), yet a small trained projection (132K params) lifts it to 35.0% — competitive with, though still behind, the language-free pair.
+3. **Text-aligned encoders transfer poorly zero-shot but adapt cheaply.** Zero-shot CLAP→CLIP retrieval is at chance level (2.4% R@5), yet a small trained projection (132K params) lifts it to 36.2% — competitive with, though still behind, the language-free pair.
 
 ## Results
 
@@ -18,12 +18,12 @@ Audio→image retrieval on a held-out validation set (254 pairs, gallery = val i
 
 | Method | Encoders | Trainable params | R@1 | R@5 | R@10 |
 |---|---|---:|---:|---:|---:|
-| **Linear probe** | Audio-MAE / DINOv2 | 590,592 | **16.93** | **43.70** | 58.27 |
-| CLAP→CLIP trained MLP | CLAP / CLIP | 131,712 | 11.42 | 35.04 | **59.06** |
-| ReLU MLP | Audio-MAE / DINOv2 | 214,016 | 9.84 | 32.28 | 57.48 |
+| **Linear probe** | Audio-MAE / DINOv2 | 590,592 | **17.32** | **45.67** | **62.20** |
+| CLAP→CLIP trained MLP | CLAP / CLIP | 131,712 | 14.96 | 36.22 | 57.87 |
+| ReLU MLP | Audio-MAE / DINOv2 | 214,016 | 11.81 | 34.25 | 56.30 |
+| SpectralBridge (proposed) | Audio-MAE / DINOv2 | 132,096 | 0.39 | 2.76 | 5.91 |
 | Zero-shot CLAP→CLIP | CLAP / CLIP | 0 | 0.79 | 2.36 | 5.51 |
 | *Random chance* | — | — | *0.39* | *1.97* | *3.94* |
-| SpectralBridge (proposed) | Audio-MAE / DINOv2 | 132,096 | 0.00 | 0.79 | 1.18 |
 
 ## Dataset
 
@@ -78,4 +78,4 @@ notebooks/
 
 ## Reproducibility
 
-All training runs in `03_train_and_evaluate_bridges.ipynb` are seeded (`torch.manual_seed(42)`, `np.random.seed(42)`) and run end-to-end on a single Colab T4 in well under an hour, given the cached embeddings. The train/val split uses a fixed `RandomState(42)` permutation shared by all methods.
+All training runs in `03_train_and_evaluate_bridges.ipynb` are seeded (`torch.manual_seed(42)`, `np.random.seed(42)`) and the full notebook runs end-to-end on a single Colab T4 in well under an hour, given the cached embeddings. The train/val split uses a fixed `RandomState(42)` permutation shared by all methods. Note that exact retrieval numbers may vary by a small margin across runs due to GPU non-determinism; reported numbers are from a single clean end-to-end run, matching the committed notebook outputs.
